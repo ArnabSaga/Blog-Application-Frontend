@@ -17,6 +17,8 @@ import {
 import { adminRoutes } from "@/routes/adminRoutes";
 import { userRoutes } from "@/routes/userRoutes";
 
+import { Routes } from "@/types";
+
 // This is sample data.
 const data = {
   logo: {
@@ -24,22 +26,7 @@ const data = {
     src: "/logo.svg",
     alt: "WriteHub logo",
     title: "WriteHub",
-  },
-  navMain: [
-    {
-      title: "WriteHub",
-      items: [
-        {
-          title: "User Dashboard",
-          url: "/dashboard",
-        },
-        {
-          title: "Admin Dashboard",
-          url: "/admin-dashboard",
-        },
-      ],
-    },
-  ],
+  }
 };
 
 export function AppSidebar({
@@ -48,7 +35,7 @@ export function AppSidebar({
 }: {
   user: { role: string } & React.ComponentProps<typeof Sidebar>;
 }) {
-  let routes = [];
+  let routes: Routes[] = [];
   switch (user.role) {
     case "admin":
       routes = adminRoutes;
