@@ -9,7 +9,7 @@ export const env = createEnv({
     AUTH_URL: z.url(),
   },
 
-  //* example only
+  //* Client Example
   client: {
     NEXT_PUBLIC_TEST: z.string(),
   },

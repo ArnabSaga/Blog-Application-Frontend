@@ -6,18 +6,18 @@ import { Roles } from "./constants/roles";
 
 export async function proxy(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
-  let isAuthenticatied = false;
+  let isAuthentcatied = false;
   let isAdmin = false;
 
   const { data } = await userService.getSession();
 
   if (data) {
-    isAuthenticatied = true;
+    isAuthentcatied = true;
     isAdmin = data.user.role === Roles.admin;
   }
 
   // * User is not authenticatied
-  if (!isAuthenticatied) {
+  if (!isAuthentcatied) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
