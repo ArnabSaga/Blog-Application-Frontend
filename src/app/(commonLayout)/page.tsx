@@ -10,8 +10,8 @@ export default async function Home() {
       // search: ""
     },
     {
-      cache: "no-store",
-      // revalidate: 10
+      // cache: "no-store",
+      revalidate: 10
     }
   );
 
