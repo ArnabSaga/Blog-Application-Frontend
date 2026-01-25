@@ -2,17 +2,43 @@ import { env } from "@/env";
 
 const API_URL = env.API_URL;
 
+interface ServiceOption {
+  cache?: RequestCache;
+  revalidate?: number;
+}
+interface GetBlogsParam {
+  isFeatured?: boolean;
+  search?: string;
+}
+
+//* No Dynamic and No { cache: no-store } : SSG -> Static Page
+//* { cache: no-store } : SSR -> Dynamic Page
+//* next: { revalidate: 10 } : ISR -> Mix between static and dynamic
+
 export const blogService = {
-  getBlogPost: async function () {
+  getBlogPost: async function (params?: GetBlogsParam, option?: ServiceOption) {
     try {
-      //* SSG => static
-      // const res = await fetch(`${API_URL}/posts`);
+      const url = new URL(`${API_URL}/posts`);
 
-      //* ISR => not Static | not Dynamic
-      const res = await fetch(`${API_URL}/posts`, { next: { revalidate: 10 } });
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            url.searchParams.append(key, value);
+          }
+        });
+      }
 
-      //* SSR => Dynamic
-      // const res = await fetch(`${API_URL}/posts`, { cache: "no-store" });
+      const config: RequestInit = {};
+
+      if (option?.cache) {
+        config.cache = option.cache;
+      }
+
+      if (option?.revalidate) {
+        config.next = { revalidate: option.revalidate };
+      }
+
+      const res = await fetch(url.toString(), config);
 
       const data = await res.json();
 
