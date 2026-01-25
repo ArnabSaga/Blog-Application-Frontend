@@ -1,16 +1,34 @@
 // export const dynamic = "force-dynamic";
+"use client";
 
-const AboutPage = async () => {
-  //* For simulating load time
-  await new Promise((reslove) => setTimeout(reslove, 4000));
+import { getBlogs } from "@/actions/blog.action";
+import { useEffect, useState } from "react";
 
-  //* For simulating error
-  // throw new Error("Something went wrong");
+export default function AboutPage() {
+  const [data, setData] = useState();
+  const [error, setError] = useState<{ message: string } | null>(null);
+
+  console.log(data);
+  console.log(error);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await getBlogs();
+
+      setData(data);
+      setError(error);
+    })();
+  }, []);
+
   return (
     <div>
       <h1>This is the about page</h1>
     </div>
   );
-};
+}
 
-export default AboutPage;
+//* For simulating load time
+// await new Promise((reslove) => setTimeout(reslove, 4000));
+
+//* For simulating error
+// throw new Error("Something went wrong");

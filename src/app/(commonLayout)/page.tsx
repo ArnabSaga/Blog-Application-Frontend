@@ -7,7 +7,6 @@ export default async function Home() {
   const { data } = await blogService.getBlogPost(
     {
       isFeatured: false,
-      // search: ""
     },
     {
       // cache: "no-store",
