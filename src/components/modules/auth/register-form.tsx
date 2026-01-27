@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import * as z from "zod";
+import { authClient } from "@/lib/auth-client";
 
 import { useForm } from "@tanstack/react-form";
 
@@ -16,12 +17,14 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(1, "This field is required"),
@@ -30,6 +33,15 @@ const formSchema = z.object({
 });
 
 export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const handleGoogleLogin = async () => {
+    const data = authClient.signIn.social({
+      provider: "google",
+      callbackURL: "http://localhost:3000/",
+    });
+
+    console.log(data);
+  };
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -40,7 +52,22 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      const toastId = toast.loading("Creating user");
+
+      try {
+        const { data, error } = await authClient.signUp.email(value);
+
+        if (error) {
+          toast.error(error.message, { id: toastId });
+          return;
+        }
+
+        toast.success("User Created Successfully", { id: toastId });
+      } catch (error) {
+        toast.error("Something went wrong, Please try again...", {
+          id: toastId,
+        });
+      }
     },
   });
 
@@ -130,10 +157,22 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button form="register-form" type="submit">
-          Submit
+      <CardFooter className="flex flex-col gap-2.5">
+        <Button form="register-form" type="submit" className="w-full">
+          Register
         </Button>
+        <Button
+          onClick={() => handleGoogleLogin()}
+          variant="outline"
+          type="button"
+          className="w-full"
+        >
+          Login with Google
+        </Button>
+
+        <FieldDescription className="text-center">
+          Already have an account? <Link href="/login">Login</Link>
+        </FieldDescription>
       </CardFooter>
     </Card>
   );
